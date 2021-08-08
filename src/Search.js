@@ -25,11 +25,28 @@ class Search extends React.Component {
             })
         }
 
-        const { goback, statechangeonSearchPage, books } = this.props
-        
+        const { goback, statechangeonSearchPage, books, currentlyReadingChange, wantToReadchange, readchange} = this.props
+        const deleteonshelf = (shelf, event, book) =>{
+          if(shelf ==="currentlyReading"){
+            currentlyReadingChange(event,book)
+          }
+          else if(shelf === "wantToRead"){
+            wantToReadchange(event,book)
+          }
+          else if(shelf === "read"){
+            readchange(event,book)
+          }
+        }
         const onSelectChange = (event, book) => {
             BooksAPI.update(book, event)
             statechangeonSearchPage(event, book)
+          
+          BooksAPI.get(book.id)
+          .then(book => (book.shelf))
+          .then(shelf => deleteonshelf(shelf, event,book))
+          //console.log(book)
+          
+          
         }
     
         return (
