@@ -1,5 +1,6 @@
 # MyReads Project
 
+<<<<<<< HEAD
 This project was bootstrapped with Create React App. The command I used to create the app : npx create-react-app "App name"
 
 This is a basic bank app created with Create React App
@@ -24,3 +25,6 @@ A plus (+) is displayed at the bottom, onclick of this, a user is directed to th
 a book can be searched for using the title or the author. 
 When the search is made, books matching the search query are displayed. On clicking the dropdown button on each book,one can see
 whether a book belongs to a shelf on the main page already, one can also change the book's shelf and this will reflect on the main page.
+=======
+### A Book Lending App
+>>>>>>> 8b76088e4804ae854789ee5e3e54e1ef22212627
