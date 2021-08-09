@@ -9,11 +9,11 @@ class Search extends React.Component {
         query: '',
         shelf: []
     }
+ 
 
     render() {
       
       let image, value, author;
-      
         const onSearchChange = (event) => {
             this.setState({
                 query: event.target.value
@@ -25,28 +25,21 @@ class Search extends React.Component {
             })
         }
 
-        const { goback, statechangeonSearchPage, books, currentlyReadingChange, wantToReadchange, readchange} = this.props
-        const deleteonshelf = (shelf, event, book) =>{
-          if(shelf ==="currentlyReading"){
-            currentlyReadingChange(event,book)
-          }
-          else if(shelf === "wantToRead"){
-            wantToReadchange(event,book)
-          }
-          else if(shelf === "read"){
-            readchange(event,book)
-          }
-        }
-        const onSelectChange = (event, book) => {
+        const { goback, statechangeonSearchPage, books, DeletestatechangeonSearchPage } = this.props
+        
+        const onSelectChange = async(event, book) => {        
             BooksAPI.update(book, event)
+            await DeletestatechangeonSearchPage(book)
             statechangeonSearchPage(event, book)
           
           BooksAPI.get(book.id)
-          .then(book => (book.shelf))
-          .then(shelf => deleteonshelf(shelf, event,book))
-          //console.log(book)
-          
-          
+          .then(book => console.log(book))
+          //.then(shelf => console.log(shelf))
+        }
+        
+        const onclick = (book)=>{
+           BooksAPI.get(book.id)
+          .then(book => console.log(book))
         }
     
         return (
@@ -73,16 +66,17 @@ class Search extends React.Component {
                             book.imageLinks ? image = book.imageLinks.thumbnail : image = null
                             book.authors ? author = book.authors[0] : author = null
 
-                            let aBook = books.filter(each => (each.title === book.title))
+                            let aBook = books.filter(each => (each.title === book.title))                            
                             aBook.length ? value = aBook[0].shelf : value = "none"
+                           
 
                             return (
-                                <li key={book.id} onClick={() => console.log(book)}>
+                                <li key={book.id} onClick={()=>onclick(book)}>
                                     <div className="book">
                                         <div className="book-top">
                                             <div className="book-cover" style={{ width: 128, height: 192, backgroundImage: 'url("' + image + '")' }}></div>
                                             <div className="book-shelf-changer">
-                                                <select value={value} onChange={(e) => onSelectChange(e.target.value, book)}>
+                                                <select id="select" value={value} onChange={(e) => onSelectChange(e.target.value, book)}>
                                                     <option value="move" disabled>Move to...</option>
                                                     <option value="currentlyReading">Currently Reading</option>
                                                     <option value="wantToRead">Want to Read</option>

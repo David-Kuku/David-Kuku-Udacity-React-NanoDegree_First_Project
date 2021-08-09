@@ -18,7 +18,8 @@ class BooksApp extends React.Component {
     books: [],
     currentlyReading: [],
     wantToRead: [],
-    read: []
+    read: [],
+    yes:'tt'
   }
 
   componentDidMount = () => {
@@ -33,19 +34,18 @@ class BooksApp extends React.Component {
 
     })
   }
-  
-  componentDidUpdate = () => {
+  componentDidUpdate=()=>{
     BooksAPI.getAll().then(books => {
       this.setState(() => ({ books }))
   })
+    
   }
-
+  
+  
 
   render() {
     const handleChange = (value, book) => {
       BooksAPI.update(book, value)
-
-
     }
 
     //updating the books in currently-reading shelf
@@ -83,38 +83,50 @@ class BooksApp extends React.Component {
       else if (value === "wantToRead") {
         this.setState((prevState) => ({ wantToRead: prevState.wantToRead.concat([book]) }))
       }
-    }
-
-    //deleting on the main Currently reading shelf when the shelf changes in the search page
-    const currentlyReadingSearchstatechange = (value, book) => {
-      this.setState((prevState) => ({ currentlyReading: prevState.currentlyReading.filter(bookitem => (bookitem.title !== book.title)) }))
-
-    }
-    //deleting on the main want to read shelf when the shelf changes in the search page
-    const wantToReadingSearchstatechange = (value, book) => {
-      this.setState((prevState) => ({ wantToRead: prevState.wantToRead.filter(bookitem => (bookitem.title !== book.title)) }))
-    }
-    //deleting on the main read shelf when the shelf changes in the search page
-    const readSearchstatechange = (value, book) => {
-      this.setState((prevState) => ({ read: prevState.read.filter(bookitem => (bookitem.title !== book.title)) }))
-    }
-    
+      
+    }  
     
     const statechangeonSearchPage = (value, book) => {
-      //adding the main currently reading shelf when the shelf changes in the search page
+      
       if (value === "currentlyReading") {
-        this.setState((prevState) => ({ currentlyReading: prevState.currentlyReading.concat([book]) }))
+        this.state.currentlyReading.filter(abook => (abook.id === book.id)).length === 0 
+        && this.setState((prevState) => ({ currentlyReading: prevState.currentlyReading.concat([book]) }))
+        
       }
       //adding the main want to read shelf when the shelf changes in the search page
       else if (value === "wantToRead") {
-        this.setState((prevState) => ({ wantToRead: prevState.wantToRead.concat([book]) }))
+        this.state.wantToRead.filter(abook => (abook.id === book.id)).length === 0 
+        && this.setState((prevState) => ({ wantToRead: prevState.wantToRead.concat([book]) }))
+        
       }
       //adding the main read shelf when the shelf changes in the search page
       else if (value === "read") {
-        this.setState((prevState) => ({ read: prevState.read.concat([book]) }))
+        this.state.read.filter(abook => (abook.id === book.id)).length === 0 
+        && this.setState((prevState) => ({ read: prevState.read.concat([book]) }))
+        
       }
+    
+      //console.log(this.state.currentlyReading)
+      //console.log(this.state.wantToRead)
+      //console.log(this.state.read)
     }
-
+    
+    
+    const DeletestatechangeonSearchPage = async(book) => {
+      if(this.state.read.filter(a => (a.id === book.id)).length){
+       await this.setState((prevState) => ({read: prevState.read.filter(books => (books.id !== book.id))}))
+      }
+    
+    else if(this.state.wantToRead.filter(a => (a.id === book.id)).length){
+       await this.setState((prevState) => ({wantToRead: prevState.wantToRead.filter(books => (books.id !== book.id))}))
+    }
+    
+    else if(this.state.currentlyReading.filter(a => (a.id === book.id)).length){
+       await this.setState((prevState) => ({currentlyReading: prevState.currentlyReading.filter(books => (books.id !== book.id))}))
+   }
+   
+    }
+    
     const GoBack = () => {
       this.setState(() => ({ showSearchPage: false }))
     }
@@ -147,9 +159,8 @@ class BooksApp extends React.Component {
           handleChange={(a, b) => handleChange(a, b)} 
           goback={GoBack} 
           statechangeonSearchPage={(a, b) => statechangeonSearchPage(a, b)}
-          currentlyReadingChange={(a, b) => currentlyReadingSearchstatechange(a, b)}
-          wantToReadchange={(a, b) => wantToReadingSearchstatechange(a, b)}
-          readchange={(a, b) => readSearchstatechange(a, b)}/>
+          DeletestatechangeonSearchPage={(b) => DeletestatechangeonSearchPage(b)}
+          />
         )} />
       </div>
     )
